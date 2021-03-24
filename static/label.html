@@ -356,15 +356,18 @@
           var threshold = 5;
           for (var i = 0; i < globaldata.length; i++) {
             var tmp = parseInt(globaldata[i].begintime);
-            if (tmp < timeMin + threshold) {
-              timeMin = tmp - threshold;
+            if (tmp < timeMin) {
+              timeMin = tmp;
             }
-            if (tmp > timeMax - threshold) {
-              timeMax = tmp + threshold;
+            if (tmp > timeMax) {
+              timeMax = tmp;
             }
             timelinedata.push({ id: globaldata[i].createtime, content: globaldata[i].label, start: tmp });
           }
           timeline.setItems(timelinedata);
+          threshold = 0.05 * (timeMax - timeMin);
+          timeMin -= threshold;
+          timeMax += threshold;
           timeline.setWindow(timeMin, timeMax);
         },
         fail: function (status) {
