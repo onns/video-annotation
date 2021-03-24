@@ -1,0 +1,9 @@
+{
+	"json_dir":"result/",
+	"vlc_url":"http://127.0.0.1:8080/",
+	"vlc_web_username":"",
+	"vlc_web_password":"1234",
+	"vlc_millisecond_xml_tag":"onnstime",
+	"http_port":":9090",
+	"labels":["未知","吃东西","喝水","玩手机","伸懒腰"]
+}

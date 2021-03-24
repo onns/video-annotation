@@ -392,6 +392,8 @@
       document.getElementById('tip').disabled = "";
       document.getElementById('createtime').disabled = "";
       document.getElementById('modifytime').disabled = "";
+
+      document.body.scrollIntoView();
     }
     function saveLabel() {
       ajax({
@@ -416,6 +418,7 @@
           // console.log(data);
           clearInput();
           getLabelList();
+          document.body.scrollIntoView();
           // dataFill(element, data.time);
           // dataFill(document.getElementById('filename'), data.filename);
         },
@@ -439,6 +442,7 @@
           // console.log(data);
           clearInput();
           getLabelList();
+          document.body.scrollIntoView();
           // dataFill(element, data.time);
           // dataFill(document.getElementById('filename'), data.filename);
         },
@@ -464,6 +468,28 @@
         }
       }
     }
+    function loadLabels() {
+      ajax({
+        url: "../get-labels", //请求地址
+        type: "GET", //请求方式
+        data: {
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          labels = document.getElementById('label');
+          labels.innerHTML = '<option value="' + data.labels[0] + '" selected>' + data.labels[0] + '</option>';
+          for (var i = 1; i < data.labels.length; i++) {
+            labels.innerHTML += '<option value="' + data.labels[i] + '">' + data.labels[i] + '</option>';
+          }
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    loadLabels();
     getLabelList();
     timeline.on('select', function (properties) {
       console.log('selected items: ' + properties.items);

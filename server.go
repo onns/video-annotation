@@ -4,7 +4,6 @@ import (
 	"./etree"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,7 +13,17 @@ import (
 	"time"
 )
 
-var SubDir = "result/"
+type GlobalConfig struct {
+	JsonDir              string   `json:"json_dir"`
+	VLCUrl               string   `json:"vlc_url"`
+	VLCWebUsername       string   `json:"vlc_web_username"`
+	VLCWebPassword       string   `json:"vlc_web_password"`
+	VLCMillisecondXMLTag string   `json:"vlc_millisecond_xml_tag"`
+	HTTPPort             string   `json:"http_port"`
+	Labels               []string `json:"labels"`
+}
+
+var OnnsGlobal GlobalConfig
 
 type VideoLabel struct {
 	Filename   string  `json:"filename"`
@@ -40,18 +49,32 @@ type LabelListResult struct {
 	Msg       string       `json:"message"`
 	Labellist []VideoLabel `json:"labellist"`
 }
+type LabelsResult struct {
+	Code   int      `json:"code"`
+	Msg    string   `json:"message"`
+	Labels []string `json:"labels"`
+}
 
 type SaveResult struct {
 	Code int8   `json:"code"`
 	Msg  string `json:"message"`
 }
 
+func loadConfig() {
+	filename := "config.json"
+	if _, err := os.Stat(filename); err == nil {
+		// path/to/whatever exists
+		b, err := ioutil.ReadFile(filename) // just pass the file name
+		if err != nil {
+			fmt.Print(err)
+		}
+		json.Unmarshal(b, &OnnsGlobal)
+	}
+}
 func getVideoInfo() TimeResult {
-	var username string = ""
-	var passwd string = "1234"
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://127.0.0.1:8080/requests/status.xml", nil)
-	req.SetBasicAuth(username, passwd)
+	req, err := http.NewRequest("GET", OnnsGlobal.VLCUrl+"requests/status.xml", nil)
+	req.SetBasicAuth(OnnsGlobal.VLCWebUsername, OnnsGlobal.VLCWebPassword)
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
@@ -68,7 +91,7 @@ func getVideoInfo() TimeResult {
 	// root := doc.SelectElement("root")
 	var timeReturn string
 	var filenameReturn string
-	for _, t := range doc.FindElements("//onnstime") {
+	for _, t := range doc.FindElements("//" + OnnsGlobal.VLCMillisecondXMLTag) {
 		// fmt.Println("Title:", t.Text())
 		timeReturn = t.Text()
 	}
@@ -90,7 +113,7 @@ func getVideoInfo() TimeResult {
 func getLabelListFromFile() []VideoLabel {
 	p := getVideoInfo()
 	var r []VideoLabel
-	filename := SubDir + p.Filename + ".json"
+	filename := OnnsGlobal.JsonDir + p.Filename + ".json"
 	if _, err := os.Stat(filename); err == nil {
 		// path/to/whatever exists
 		b, err := ioutil.ReadFile(filename) // just pass the file name
@@ -108,7 +131,7 @@ func saveLabelListToFile(l []VideoLabel, s string) {
 	if err != nil {
 		fmt.Println("json err:", err)
 	}
-	err = ioutil.WriteFile(SubDir+s, b, 0644)
+	err = ioutil.WriteFile(OnnsGlobal.JsonDir+s, b, 0644)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -137,29 +160,17 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello astaxie!") //这个写入到w的是输出到客户端的
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) //获取请求的方法
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("login.html")
-		log.Println(t.Execute(w, nil))
-	} else {
-		//请求的是登录数据，那么执行登录的逻辑判断
-		r.ParseForm()
-		fmt.Println("username:", r.Form["username"])
-		fmt.Println("password:", r.Form["password"])
+func getLabels(w http.ResponseWriter, r *http.Request) {
+	p := LabelsResult{
+		Code:   0,
+		Msg:    "标签获取成功",
+		Labels: OnnsGlobal.Labels,
 	}
-}
 
-func label(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) //获取请求的方法
-	if r.Method == "GET" {
-		t, _ := template.ParseFiles("label.html")
-		log.Println(t.Execute(w, nil))
-	} else {
-		//请求的是登录数据，那么执行登录的逻辑判断
-		r.ParseForm()
-		fmt.Println("username:", r.Form["username"])
-		fmt.Println("password:", r.Form["password"])
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(&p); err != nil {
+		panic(err)
 	}
 }
 
@@ -179,7 +190,7 @@ func getLabelList(w http.ResponseWriter, r *http.Request) {
 
 	p := LabelListResult{
 		Code:      0,
-		Msg:       "获取标签列表成功",
+		Msg:       "标签列表获取成功",
 		Labellist: l,
 	}
 
@@ -284,16 +295,16 @@ func deleteLabel(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	loadConfig()
 	http.HandleFunc("/", sayhelloName)
-	http.HandleFunc("/login", login)
-	http.HandleFunc("/label", label)
+	http.HandleFunc("/get-labels", getLabels)
 	http.HandleFunc("/get-time", getTime)
 	http.HandleFunc("/get-label-list", getLabelList)
 	http.HandleFunc("/save-label", saveLabel)
 	http.HandleFunc("/delete-label", deleteLabel)
 	http.Handle("/static/", http.FileServer(http.Dir("")))
 	// https://darjun.github.io/2020/01/13/goweb/fileserver/
-	err := http.ListenAndServe(":9090", nil) //设置监听的端口
+	err := http.ListenAndServe(OnnsGlobal.HTTPPort, nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
