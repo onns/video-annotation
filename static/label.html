@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频数据标注</title>
+  <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+  <link rel="stylesheet" type="text/css" href="css/default.css">
+  <link rel='stylesheet prefetch' type="text/css" href='css/foundation.css'>
+  <link rel="stylesheet prefetch" type="text/css" href="css/roboto.css">
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <script type="text/javascript" src="js/vis-timeline-graph2d.min.js"></script>
+  <link href="css/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div id="visualization"></div>
+  <header class="m-main-header"></header>
+  <div class="row">
+    <div class="small-12 small-centered medium-8 columns">
+      <div class="panel m-panel shadow">
+        <div class="row collapse">
+          <div class="small-12 columns">
+            <header class="form-header">
+              <h2>视频数据标注</h2>
+            </header>
+          </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns">
+
+            <div class="row">
+              <div class="small-4 columns">
+                <p class="notice">数据信息</p>
+              </div>
+              <div class="small-8 columns">
+                <div class="form-group-material">
+                  <label class="material-label" for="filename">文件名称</label>
+                  <input class="material-field" id="filename" type="text" />
+                </div>
+              </div>
+            </div>
+
+            <!--  <div class="row">
+              <div class="small-4 columns"></div>
+              <div class="small-8 columns">
+                <div class="form-group-material">
+                  <label class="material-label" for="labelid">标签序号</label>
+                  <input class="material-field" id="labelid" type="text" disabled="disabled" />
+                </div>
+              </div>
+            </div> -->
+
+            <div class="row">
+              <div class="small-4 columns">
+                <p class="notice">数据范围</p>
+              </div>
+              <div class="small-8 columns">
+                <div class="row">
+                  <div class="small-6 columns">
+                    <div class="form-group-material">
+                      <label class="material-label" for="begintime">开始时间</label>
+                      <input class="material-field" id="begintime" type="text" required="required" />
+                    </div>
+                  </div>
+                  <div class="small-6 columns">
+                    <div class="form-group-material">
+                      <label class="material-label" for="endtime">结束时间</label>
+                      <input class="material-field" id="endtime" type="text" required="required" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-4 columns"></div>
+              <div class="small-8 columns">
+                <div class="row">
+                  <div class="small-6 columns">
+                    <button onclick="javascript:getTime(document.getElementById('begintime'))">填入当前时间</button>
+                  </div>
+                  <div class="small-6 columns">
+                    <button onclick="javascript:getTime(document.getElementById('endtime'))">填入当前时间</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-4 columns">
+                <p class="notice">标签信息</p>
+              </div>
+              <div class="small-8 columns">
+                <select class="form-group-material" id="label" required="required">
+                  <option value="未知" selected>未知</option>
+                  <option value="吃东西">吃东西</option>
+                  <option value="玩手机">玩手机</option>
+                  <option value="喝水">喝水</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-4 columns"></div>
+              <div class="small-8 columns">
+                <div class="form-group-material">
+                  <label class="material-label" for="info">附加信息</label>
+                  <input class="material-field" id="info" type="text" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-4 columns">
+                <p class="notice">数据质量</p>
+              </div>
+              <div class="small-8 columns">
+                <select class="form-group-material" id="quality" required="required">
+                  <option value="0" selected>未知</option>
+                  <option value="1">较好</option>
+                  <option value="2">一般</option>
+                  <option value="3">较差</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-4 columns">
+                <p class="notice">其它信息</p>
+              </div>
+              <div class="small-8 columns">
+                <div class="form-group-material">
+                  <label class="material-label" for="tip">备注信息</label>
+                  <input class="material-field" id="tip" type="text" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-4 columns"></div>
+              <div class="small-8 columns">
+                <div class="row">
+                  <div class="small-6 columns">
+                    <div class="form-group-material">
+                      <label class="material-label" for="createtime">创建时间</label>
+                      <input class="material-field" id="createtime" type="text" disabled />
+                    </div>
+                  </div>
+                  <div class="small-6 columns">
+                    <div class="form-group-material">
+                      <label class="material-label" for="modifytime">修改时间</label>
+                      <input class="material-field" id="modifytime" type="text" disabled />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="small-2 small-push-4 columns">
+                <button onclick="javascript:saveLabel()">保存</button>
+              </div>
+              <div class="small-2 small-push-6 columns">
+                <button onclick="javascript:clearInput()">清空</button>
+              </div>
+              <div class="small-2 columns">
+                <button onclick="javascript:deleteLabel()">删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- https://github.com/visjs/vis-timeline -->
+  <!-- timeline.setItems(items) -->
+
+  <script type="text/javascript">
+    // DOM element where the Timeline will be attached
+    var container = document.getElementById('visualization');
+    var timelinedata = [];
+    var globaldata = [];
+    // Create a DataSet (allows two way data-binding)
+    var items = new vis.DataSet([
+      // {id: 1, content: 'item 1', start: 1},
+      // {id: 2, content: 'item 2', start: 13},
+      // {id: 4, content: 'item 2', start: 13},
+      // {id: 3, content: 'item 2', start: 159},
+      // {id: 5, content: 'item 2', start: 159},
+      // {id: 6, content: 'item 2', start: 1000},
+      // {id: 7, content: 'item 10', start: 1000},
+      // {id: 8, content: 'item 10', start: 999},
+    ]);
+
+    // Configuration for the Timeline
+    var options = {};
+
+    // Create a Timeline
+    var timeline = new vis.Timeline(container, items, options);
+  </script>
+
+  <script src="js/jquery-2.1.1.min.js"></script>
+  <script>
+    (function () {
+      var materialForm;
+      materialForm = function () {
+        return $('.material-field').focus(function () {
+          return $(this).closest('.form-group-material').addClass('focused has-value');
+        }).focusout(function () {
+          return $(this).closest('.form-group-material').removeClass('focused');
+        }).blur(function () {
+          if (!this.value) {
+            $(this).closest('.form-group-material').removeClass('has-value');
+          }
+          return $(this).closest('.form-group-material').removeClass('focused');
+        });
+      };
+      $(function () {
+        return materialForm();
+      });
+    }.call(this));
+
+    function ajax(options) {
+      /**
+       * 传入方式默认为对象
+       * 作者：eternalshallow
+       * 链接：https://juejin.im/post/5a3229da5188257a3e4eadcf
+       * 来源：掘金
+       * 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+       * */
+      options = options || {};
+      /**
+       * 默认为GET请求
+       * */
+      options.type = (options.type || "GET").toUpperCase();
+      /**
+       * 返回值类型默认为json
+       * */
+      options.dataType = options.dataType || "json";
+      /**
+       * 默认为异步请求
+       * */
+      options.async = options.async || true;
+      /**
+       * 对需要传入的参数的处理
+       * */
+      var params = this.getParams(options.data);
+      var xhr;
+      /**
+       * 创建一个 ajax请求
+       * W3C标准和IE标准
+       */
+      if (window.XMLHttpRequest) {
+        /**
+         * W3C标准
+         * */
+        xhr = new XMLHttpRequest();
+      } else {
+        /**
+         * IE标准
+         * @type {ActiveXObject}
+         */
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+          var status = xhr.status;
+          if (status >= 200 && status < 300) {
+            options.success && options.success(xhr.responseText, xhr.responseXML);
+          } else {
+            options.fail && options.fail(status);
+          }
+        }
+      };
+      if (options.type == "GET") {
+        xhr.open("GET", options.url + "?" + params, options.async);
+        xhr.send(null);
+      } else if (options.type == "POST") {
+        /**
+         *打开请求
+         * */
+        xhr.open("POST", options.url, options.async);
+        /**
+         * POST请求设置请求头
+         * */
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        /**
+         * 发送请求参数
+         */
+        xhr.send(params);
+      }
+    }
+
+
+    function getParams(data) {
+      /**
+       * 对象参数的处理
+       * @param data
+       * @returns {string}
+       */
+      var arr = [];
+      for (var param in data) {
+        arr.push(
+          encodeURIComponent(param) + "=" + encodeURIComponent(data[param])
+        );
+      }
+      arr.push(("randomNumber=" + Math.random()).replace("."));
+      return arr.join("&");
+    }
+
+    function dataFill(element, data, editable = false) {
+      element.disabled = "";
+      element.focus();
+      element.value = data;
+      element.blur();
+      if (!editable) {
+        element.disabled = "disabled";
+      }
+    }
+    function getTime(element) {
+      ajax({
+        url: "../get-time", //请求地址
+        type: "GET", //请求方式
+        data: {
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          // console.log(data);
+          dataFill(element, data.time);
+          dataFill(document.getElementById('filename'), data.filename);
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    function getLabelList() {
+      ajax({
+        url: "../get-label-list", //请求地址
+        type: "GET", //请求方式
+        data: {
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          globaldata = data.labellist;
+          timelinedata = [];
+          var timeMin = 100;
+          var timeMax = 0;
+          var threshold = 5;
+          for (var i = 0; i < globaldata.length; i++) {
+            var tmp = parseInt(globaldata[i].begintime);
+            if (tmp < timeMin + threshold) {
+              timeMin = tmp - threshold;
+            }
+            if (tmp > timeMax - threshold) {
+              timeMax = tmp + threshold;
+            }
+            timelinedata.push({ id: globaldata[i].createtime, content: globaldata[i].label, start: tmp });
+          }
+          timeline.setItems(timelinedata);
+          timeline.setWindow(timeMin, timeMax);
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    function clearInput() {
+      document.getElementById('filename').value = "";
+      document.getElementById('begintime').value = "";
+      document.getElementById('endtime').value = "";
+      document.getElementById('label').value = "未知";
+      document.getElementById('quality').value = 0;
+      document.getElementById('info').value = "";
+      document.getElementById('tip').value = "";
+      document.getElementById('createtime').value = "";
+      document.getElementById('modifytime').value = "";
+
+      document.getElementById('filename').disabled = "";
+      document.getElementById('begintime').disabled = "";
+      document.getElementById('endtime').disabled = "";
+      document.getElementById('label').disabled = "";
+      document.getElementById('quality').disabled = "";
+      document.getElementById('info').disabled = "";
+      document.getElementById('tip').disabled = "";
+      document.getElementById('createtime').disabled = "";
+      document.getElementById('modifytime').disabled = "";
+    }
+    function saveLabel() {
+      ajax({
+        url: "../save-label", //请求地址
+        type: "POST", //请求方式
+        data: {
+          // 'labelid': document.getElementById('labelid').value,
+          'filename': document.getElementById('filename').value,
+          'begintime': document.getElementById('begintime').value,
+          'endtime': document.getElementById('endtime').value,
+          'label': document.getElementById('label').value,
+          'quality': document.getElementById('quality').value,
+          'info': document.getElementById('info').value,
+          'tip': document.getElementById('tip').value,
+          'createtime': document.getElementById('createtime').value,
+          'modifytime': document.getElementById('modifytime').value,
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          // console.log(data);
+          clearInput();
+          getLabelList();
+          // dataFill(element, data.time);
+          // dataFill(document.getElementById('filename'), data.filename);
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    function deleteLabel() {
+      ajax({
+        url: "../delete-label", //请求地址
+        type: "POST", //请求方式
+        data: {
+          'filename': document.getElementById('filename').value,
+          'createtime': document.getElementById('createtime').value,
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          // console.log(data);
+          clearInput();
+          getLabelList();
+          // dataFill(element, data.time);
+          // dataFill(document.getElementById('filename'), data.filename);
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    function fillInData(id) {
+      for (var i = 0; i < globaldata.length; i++) {
+        // console.log(id);
+        // console.log(globaldata[i].createtime);
+        if (globaldata[i].createtime == id) {
+          dataFill(document.getElementById('filename'), globaldata[i].filename);
+          dataFill(document.getElementById('begintime'), globaldata[i].begintime);
+          dataFill(document.getElementById('endtime'), globaldata[i].endtime);
+          dataFill(document.getElementById('label'), globaldata[i].label, true);
+          dataFill(document.getElementById('quality'), globaldata[i].quality, true);
+          dataFill(document.getElementById('info'), globaldata[i].info, true);
+          dataFill(document.getElementById('tip'), globaldata[i].tip, true);
+          dataFill(document.getElementById('createtime'), globaldata[i].createtime);
+          dataFill(document.getElementById('modifytime'), globaldata[i].modifytime);
+        }
+      }
+    }
+    getLabelList();
+    timeline.on('select', function (properties) {
+      console.log('selected items: ' + properties.items);
+      fillInData(properties.items);
+    });
+  </script>
+</body>
+
+</html>
