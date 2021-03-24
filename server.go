@@ -147,17 +147,17 @@ func deleteLabelByCreateTime(l []VideoLabel, s string) []VideoLabel {
 	return l
 }
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm() //解析url传递的参数，对于POST则解析响应包的主体（request body）
-	//注意:如果没有调用ParseForm方法，下面无法获取表单的数据
-	fmt.Println(r.Form) //这些信息是输出到服务器端的打印信息
-	fmt.Println("path", r.URL.Path)
-	fmt.Println("scheme", r.URL.Scheme)
-	fmt.Println(r.Form["url_long"])
-	for k, v := range r.Form {
-		fmt.Println("key:", k)
-		fmt.Println("val:", strings.Join(v, ""))
-	}
-	fmt.Fprintf(w, "Hello astaxie!") //这个写入到w的是输出到客户端的
+	// r.ParseForm() //解析url传递的参数，对于POST则解析响应包的主体（request body）
+	// //注意:如果没有调用ParseForm方法，下面无法获取表单的数据
+	// fmt.Println(r.Form) //这些信息是输出到服务器端的打印信息
+	fmt.Println("path: ", r.URL.Path)
+	// fmt.Println("scheme", r.URL.Scheme)
+	// fmt.Println(r.Form["url_long"])
+	// for k, v := range r.Form {
+	// 	fmt.Println("key:", k)
+	// 	fmt.Println("val:", strings.Join(v, ""))
+	// }
+	// fmt.Fprintf(w, "Hello astaxie!") //这个写入到w的是输出到客户端的
 }
 
 func getLabels(w http.ResponseWriter, r *http.Request) {
@@ -305,6 +305,7 @@ func main() {
 	http.Handle("/static/", http.FileServer(http.Dir("")))
 	// https://darjun.github.io/2020/01/13/goweb/fileserver/
 	err := http.ListenAndServe(OnnsGlobal.HTTPPort, nil) //设置监听的端口
+	fmt.Println("视频标注工具运行成功！监听 ", OnnsGlobal.HTTPPort)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
