@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -304,8 +303,8 @@ func main() {
 	http.HandleFunc("/delete-label", deleteLabel)
 	http.Handle("/static/", http.FileServer(http.Dir("")))
 	// https://darjun.github.io/2020/01/13/goweb/fileserver/
-	err := http.ListenAndServe(OnnsGlobal.HTTPPort, nil) //设置监听的端口
 	fmt.Println("视频标注工具运行成功！监听 ", OnnsGlobal.HTTPPort)
+	err := http.ListenAndServe(OnnsGlobal.HTTPPort, nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

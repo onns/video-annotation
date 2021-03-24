@@ -3,3 +3,5 @@ etree/*
 test/*
 result/*
 config.json
+server
+server.exe
