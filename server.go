@@ -76,7 +76,14 @@ func getVideoInfo() TimeResult {
 	req.SetBasicAuth(OnnsGlobal.VLCWebUsername, OnnsGlobal.VLCWebPassword)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		r := TimeResult{
+			Code:     -1,
+			Msg:      err.Error(),
+			Time:     "",
+			Filename: "",
+		}
+
+		return r
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	s := string(bodyText)
