@@ -351,7 +351,7 @@
           data = JSON.parse(response);
           globaldata = data.labellist;
           timelinedata = [];
-          var timeMin = 100;
+          var timeMin = Infinity;
           var timeMax = 0;
           var threshold = 5;
           for (var i = 0; i < globaldata.length; i++) {
