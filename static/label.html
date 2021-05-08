@@ -162,7 +162,10 @@
               <div class="small-2 small-push-4 columns">
                 <button onclick="javascript:saveLabel()">保存</button>
               </div>
-              <div class="small-2 small-push-6 columns">
+              <div class="small-2 small-push-4 columns">
+                <button onclick="javascript:testLabel()">测试</button>
+              </div>
+              <div class="small-2 small-push-4 columns">
                 <button onclick="javascript:clearInput()">清空</button>
               </div>
               <div class="small-2 columns">
@@ -401,6 +404,38 @@
     function saveLabel() {
       ajax({
         url: "../save-label", //请求地址
+        type: "POST", //请求方式
+        data: {
+          // 'labelid': document.getElementById('labelid').value,
+          'filename': document.getElementById('filename').value,
+          'begintime': document.getElementById('begintime').value,
+          'endtime': document.getElementById('endtime').value,
+          'label': document.getElementById('label').value,
+          'quality': document.getElementById('quality').value,
+          'info': document.getElementById('info').value,
+          'tip': document.getElementById('tip').value,
+          'createtime': document.getElementById('createtime').value,
+          'modifytime': document.getElementById('modifytime').value,
+        }, //请求参数
+        dataType: "json", // 返回值类型的设定
+        async: true, //是否异步
+        success: function (response, xml) {
+          data = JSON.parse(response);
+          // console.log(data);
+          clearInput();
+          getLabelList();
+          document.body.scrollIntoView();
+          // dataFill(element, data.time);
+          // dataFill(document.getElementById('filename'), data.filename);
+        },
+        fail: function (status) {
+          alert("Error Code: " + status); // 此处为执行成功后的代码
+        }
+      });
+    }
+    function testLabel() {
+      ajax({
+        url: "../test-label", //请求地址
         type: "POST", //请求方式
         data: {
           // 'labelid': document.getElementById('labelid').value,
