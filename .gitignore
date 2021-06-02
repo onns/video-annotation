@@ -5,3 +5,4 @@ result/*
 config.json
 server
 server.exe
+static/log

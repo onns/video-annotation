@@ -5,5 +5,5 @@
   "vlc_web_password": "1234",
   "vlc_millisecond_xml_tag": "onnstime",
   "http_port": ":9090",
-  "labels": ["未知", "吃东西", "喝水", "玩手机", "伸懒腰"]
+  "labels": ["未知", "把东西从右推到左", "吃东西", "喝水", "玩手机", "伸懒腰"]
 }
